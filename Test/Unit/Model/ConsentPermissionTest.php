@@ -6,9 +6,11 @@ namespace CommerceKings\ConsentNotification\Test\Unit\Model;
 use CommerceKings\Consent\Api\BrowserIdentityInterface;
 use CommerceKings\Consent\Api\ConsentGuardInterface;
 use CommerceKings\Consent\Api\ConsentInterface;
+use CommerceKings\Consent\Api\WithdrawalLinkInterface;
 use CommerceKings\Consent\Api\Data\Consent;
 use CommerceKings\Consent\Model\ConsentStore;
 use CommerceKings\ConsentNotification\Model\ConsentPermission;
+use CommerceKings\Notification\Api\Data\Subscription;
 use CommerceKings\Notification\Api\Data\Target;
 use CommerceKings\Notification\Api\SubscriptionTypeInterface;
 use Magento\Store\Api\Data\StoreInterface;
@@ -20,6 +22,9 @@ class ConsentPermissionTest extends TestCase
     private ?Consent $current = null;
     private array $reads = [];
 
+    private ?Consent $stored = null;
+    private bool $valid = true;
+
     private function permission(?BrowserIdentityInterface $browser = null, ?ConsentStore $records = null): ConsentPermission
     {
         $consent = $this->createStub(ConsentInterface::class);
@@ -27,6 +32,10 @@ class ConsentPermissionTest extends TestCase
             $this->reads[] = $purpose;
             return $this->current;
         });
+        $consent->method('get')->willReturnCallback(fn () => $this->stored);
+        $consent->method('isValid')->willReturnCallback(fn () => $this->valid);
+        $links = $this->createStub(WithdrawalLinkInterface::class);
+        $links->method('getUrl')->willReturnCallback(fn ($id) => 'https://shop.test/ckconsent/optout?c=' . $id . '&t=sig');
         $guard = $this->createStub(ConsentGuardInterface::class);
         $guard->method('validCondition')->willReturnCallback(fn ($column) => 'VALID(' . $column . ')');
         $store = $this->createStub(StoreInterface::class);
@@ -34,7 +43,8 @@ class ConsentPermissionTest extends TestCase
         $stores = $this->createStub(StoreManagerInterface::class);
         $stores->method('getStore')->willReturn($store);
         return new ConsentPermission($consent, $guard, $stores,
-            $browser ?? $this->createStub(BrowserIdentityInterface::class), $records ?? $this->createStub(ConsentStore::class));
+            $browser ?? $this->createStub(BrowserIdentityInterface::class), $records ?? $this->createStub(ConsentStore::class),
+            $links);
     }
 
     private static function consent(int $website = 1, string $purpose = 'test_purpose'): Consent
@@ -97,5 +107,33 @@ class ConsentPermissionTest extends TestCase
         $this->assertFalse($permission->isCurrentVisitor('mine'), 'a browser without an id');
         $this->assertFalse($permission->isCurrentVisitor('blank'), 'a consent without a browser');
         $this->assertFalse($permission->isCurrentVisitor('gone'), 'a deleted consent');
+    }
+
+    /** Send-time recheck: valid, and for this purpose and the store's website (moved from abandoned cart). */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sendTimeCases')]
+    public function testSendTimeRecheckNeedsAValidConsentOfThisPurposeAndWebsite(bool $valid, ?Consent $stored, bool $expected): void
+    {
+        $this->valid = $valid;
+        $this->stored = $stored;
+        $this->assertSame($expected, $this->permission()->isValidFor('new-consent', 'test_purpose', 3));
+    }
+
+    public static function sendTimeCases(): array
+    {
+        return [
+            'valid, same purpose and website' => [true, self::consent(), true],
+            'withdrawn / expired / old revision' => [false, self::consent(), false],
+            'another website' => [true, self::consent(2), false],
+            'another purpose' => [true, self::consent(1, 'other'), false],
+            'deleted' => [true, null, false],
+        ];
+    }
+
+    public function testUnsubscribeIsConsentsSignedWithdrawalLink(): void
+    {
+        $subscription = fn (string $ref) => new Subscription(7, 'cart_reminder', 42, 1, 5, null, $ref, '2026-01-01 00:00:00');
+        $this->assertSame('https://shop.test/ckconsent/optout?c=abc&t=sig',
+            $this->permission()->getUnsubscribeUrl($subscription('abc')));
+        $this->assertNull($this->permission()->getUnsubscribeUrl($subscription('')), 'no consent, no link');
     }
 }

@@ -26,6 +26,11 @@ bin/magento setup:upgrade
   cookie against the consent record), so features may hand a subscriber's data back to that browser only – e.g.
   abandoned cart's restore link.
 
+- **Send time and unsubscribe.** `isValidFor()` rechecks a stored consent (valid, this purpose, the store's
+  website); `getUnsubscribeUrl()` is Consent's signed withdrawal link (confirmation page and RFC 8058 one-click).
+- **Storefront.** Maps `CommerceKings_Notification/js/permission` to the visitor's consent choice
+  (`CommerceKings_Consent/js/consent/provider`), so features subscribe only with consent.
+
 It adds no tables and no settings.
 
 ## Tests
