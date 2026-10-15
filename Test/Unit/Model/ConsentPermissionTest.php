@@ -78,7 +78,7 @@ class ConsentPermissionTest extends TestCase
 
     public function testTheSqlConditionIsConsentsGuard(): void
     {
-        $this->assertSame('VALID(s.consent_id)', $this->permission()->validCondition('s.consent_id'));
+        $this->assertSame('VALID(s.permission_ref)', $this->permission()->validCondition('s.permission_ref'));
     }
 
     /** The visitor is the browser the consent was given in. */

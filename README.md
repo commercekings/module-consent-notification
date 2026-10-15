@@ -15,7 +15,7 @@ bin/magento setup:upgrade
 
 - **Subscribing needs a consent.** Replaces Notification's `SubscriptionPermissionInterface` with
   `Model\ConsentPermission`: a subscription needs a valid consent (`ConsentInterface::getCurrent()`) for its type's
-  purpose on the target's website. The consent id is stored on the subscription, and Consent's SQL guard is part of
+  purpose on the target's website. The consent id is the subscription's `permission_ref`, and Consent's SQL guard is part of
   the subscribe INSERT and of every send-time check, so a withdrawal at the same moment wins.
   - no consent → a guest's subscription to a single type is removed (as with an empty email);
   - a consent of another website or purpose → refused, nothing changes.
