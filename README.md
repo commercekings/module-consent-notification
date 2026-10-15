@@ -22,12 +22,13 @@ bin/magento setup:upgrade
 - **Withdrawal removes subscriptions.** `Plugin\WithdrawalPoolPlugin` registers `Model\WithdrawalHandler` (name
   `notification_subscriptions`) for the purpose of every Notification subscription type, so a feature module
   registers only its subscription type. A handler registered for the same purpose and name in `di.xml` wins.
-- **Who subscribed.** The visitor is identified by the browser the consent was given in (Consent's browser id
-  cookie against the consent record), so features may hand a subscriber's data back to that browser only – e.g.
-  abandoned cart's restore link.
+- **Who subscribed.** Replaces Notification's `SubscriberInterface` with `Model\ConsentSubscriber`: the subscriber is
+  the browser the consent was given in (Consent's public `ConsentOwnershipInterface`), so features may hand a
+  subscriber's data back to that browser only – e.g. abandoned cart's restore link.
 
-- **Send time and unsubscribe.** `isValidFor()` rechecks a stored consent (valid, this purpose, the store's
-  website); `getUnsubscribeUrl()` is Consent's signed withdrawal link (confirmation page and RFC 8058 one-click).
+- **Send time and unsubscribe.** `ConsentPermission::isValidFor()` rechecks a stored consent (valid, this purpose,
+  the store's website); `ConsentSubscriber::getUnsubscribeUrl()` is Consent's signed withdrawal link (confirmation
+  page and RFC 8058 one-click).
 - **Storefront.** Maps `CommerceKings_Notification/js/permission` to the visitor's consent choice
   (`CommerceKings_Consent/js/consent/provider`), so features subscribe only with consent.
 
@@ -35,6 +36,6 @@ It adds no tables and no settings.
 
 ## Tests
 
-`Test/Unit` covers the permission (granted, absent, refused, SQL condition, browser identification) and the
-withdrawal registration. Install the source checkout in a Magento development project and run them with PHPUnit;
+`Test/Unit` covers the permission (granted, absent, refused, SQL condition, send-time recheck), the subscriber
+(browser ownership, unsubscribe link) and the withdrawal registration. Install the source checkout in a Magento development project and run them with PHPUnit;
 the CommerceKings sandbox runs them with every package.

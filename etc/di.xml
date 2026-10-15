@@ -2,6 +2,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <!-- a subscription needs a valid CommerceKings_Consent consent for its type's purpose -->
     <preference for="CommerceKings\Notification\Api\SubscriptionPermissionInterface" type="CommerceKings\ConsentNotification\Model\ConsentPermission"/>
+    <!-- the subscriber is the consenting browser; unsubscribing withdraws the consent -->
+    <preference for="CommerceKings\Notification\Api\SubscriberInterface" type="CommerceKings\ConsentNotification\Model\ConsentSubscriber"/>
     <!-- withdrawing that consent removes the subscriptions, for every subscription type's purpose -->
     <type name="CommerceKings\Consent\Model\WithdrawalPool">
         <plugin name="commercekings_consent_notification" type="CommerceKings\ConsentNotification\Plugin\WithdrawalPoolPlugin"/>
