@@ -13,7 +13,11 @@
         "magento/framework": "^103.0",
         "magento/module-store": "^101.1",
         "commercekings/module-consent": "^0.1",
-        "commercekings/module-notification": "^0.1"
+        "commercekings/module-notification": "^0.1",
+        "commercekings/consent-source": "^0.1"
+    },
+    "suggest": {
+        "commercekings/module-consent-vanilla": "A consent banner. Or any package that provides commercekings/consent-source."
     },
     "autoload": {
         "files": [

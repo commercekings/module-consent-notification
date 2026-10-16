@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <commercekings_consent_notification>
+            <general>
+                <!-- on while this bridge is installed: features list it in their purpose's "active_if", so their consent
+                     switch shows only in the opt-in setup (no admin field) -->
+                <enabled>1</enabled>
+            </general>
+        </commercekings_consent_notification>
+    </default>
+</config>

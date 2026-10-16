@@ -4,6 +4,8 @@
 
 First release. Features:
 
+- Requires a consent banner (`commercekings/consent-source`, provided by `module-consent-vanilla`); sets
+  `commercekings_consent_notification/general/enabled`, which features use to show their consent switch only in opt-in.
 - `ConsentPermission::isOptOut()` is false: features' notices default to hidden with consent.
 - **Consent permission** for Notification subscriptions: a valid `commercekings/module-consent` consent for the
   type's purpose and website, its id stored on the subscription and its SQL guard in every write and send check.

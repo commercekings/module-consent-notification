@@ -23,6 +23,10 @@ bin/magento setup:upgrade
 
 No tables, no settings. Without it, Notification and its features run opt-out.
 
+It needs a consent banner (`commercekings/module-consent-vanilla`, or any package that provides
+`commercekings/consent-source`) – Composer refuses to install it without one. `commercekings/consent-optin`
+installs both.
+
 ## More
 
 [Compatibility](COMPATIBILITY.md) · [Changes](CHANGELOG.md)
