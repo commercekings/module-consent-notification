@@ -1,5 +1,9 @@
 # Consent for notifications
 
+**One install switches every CommerceKings notification to opt-in.**
+
+Consent per purpose · withdrawal removes subscriptions · signed unsubscribe links
+
 The bridge between `commercekings/module-consent` and `commercekings/module-notification`. Install it when
 notifications (e.g. abandoned cart reminders) must need a consent; leave it out for opt-out notifications – then no
 consent tables exist.
