@@ -2,6 +2,8 @@
 
 Works with Magento 2.4+ · Luma and Hyvä · PHP 8.1–8.5
 
+<sub>Built by [CommerceKings](https://commercekings.net) – expert Magento engineering. New store, maintenance, custom development or more sales? [Talk to us](https://commercekings.net).</sub>
+
 **Switch every CommerceKings notification to opt-in with one install.**
 
 - **One switch.** Install it and every notification needs a consent first – no code, no settings.
