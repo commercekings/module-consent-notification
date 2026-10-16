@@ -4,6 +4,8 @@
 
 Works with Magento 2.4+ · Luma and Hyvä · PHP 8.1–8.5
 
+[![License](https://badgen.net/github/license/commercekings/module-consent-notification)](LICENSE) [![Release](https://badgen.net/github/release/commercekings/module-consent-notification)](https://github.com/commercekings/module-consent-notification/releases) [![Checks](https://badgen.net/github/checks/commercekings/module-consent-notification/main?label=checks)](https://github.com/commercekings/module-consent-notification/actions)
+
 <sub>Expert Magento engineering. New store, maintenance, custom development, high-performance hosting or more sales? [Talk to us](https://commercekings.net).</sub>
 
 **Switch every CommerceKings notification to opt-in with one install.**
