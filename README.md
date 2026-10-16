@@ -1,37 +1,35 @@
 # Consent for notifications
 
+Works with Magento 2.4+ · Luma and Hyvä · PHP 8.1–8.5
+
 **Switch every CommerceKings notification to opt-in with one install.**
 
-Consent per purpose · withdrawing removes the subscription · data handed back only to the browser that consented · signed, scanner-safe unsubscribe links
+- **One switch.** Install it and every notification needs a consent first – no code, no settings.
+- **One-click unsubscribe.** Every email gets a signed, scanner-safe unsubscribe link, plus RFC 8058 headers that
+  mail clients such as Gmail can show as a button.
+- **Withdrawal removes the subscription.** A shopper says no, and nothing more is sent.
+- **Only the right browser.** A restored cart goes back only to the browser that consented.
 
-The bridge between `commercekings/module-consent` and `commercekings/module-notification`. Install it when
-notifications (e.g. abandoned cart reminders) must need a consent; leave it out for opt-out notifications – then no
-consent tables exist.
+The bridge between `commercekings/module-consent` and `commercekings/module-notification`. Leave it out and
+notifications run opt-out, with no consent tables.
 
 ```sh
 composer require commercekings/privacy-bundle:^0.1
 bin/magento setup:upgrade
 ```
 
-`commercekings/privacy-bundle` installs this bridge with the cookie banner. With your own banner:
+It needs a consent banner – Composer refuses to install it without one. `commercekings/privacy-bundle` brings ours;
+with your own banner (any package that provides `commercekings/consent-source`):
 `composer require commercekings/module-consent-notification:^0.1 vendor/your-banner`.
 
 ## What it does
 
-- **Subscribing needs a consent** for the notification's purpose, on the cart's website. The consent id is stored
-  on the subscription, and the consent check is part of the same database write, so a withdrawal at that moment wins.
-- **Withdrawing removes subscriptions** of every notification type – a feature registers only its type.
-- **Only the consenting browser is the subscriber**, so a feature (e.g. the cart restore link) hands data back only
-  there.
-- **Rechecks at send time** and gives the email Consent's signed unsubscribe link (confirmation page and
-  one-click).
-- **In the storefront**, features subscribe only when the visitor's banner choice allows it, and their opt-out
-  notices are off by default (the banner informs instead).
+- **Race-safe.** The consent check is part of the same database write as the subscription, so a withdrawal at that
+  moment wins; it is checked again at send time.
+- **In the storefront**, features subscribe only when the banner allows it; their opt-out notices are off by default
+  (the banner informs instead).
 
-No tables, no settings. Without it, Notification and its features run opt-out.
-
-It needs a consent banner (`commercekings/module-consent-vanilla`, or any package that provides
-`commercekings/consent-source`) – Composer refuses to install it without one.
+It adds no tables.
 
 ## More
 
