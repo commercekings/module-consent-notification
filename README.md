@@ -1,4 +1,4 @@
-# CommerceKings_ConsentNotification
+# Consent for notifications
 
 The bridge between `commercekings/module-consent` and `commercekings/module-notification`. Install it when
 notifications (e.g. abandoned cart reminders) must need a consent; leave it out for opt-out notifications – then no
