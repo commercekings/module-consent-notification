@@ -5,8 +5,8 @@ Works with Magento 2.4+ · Luma and Hyvä · PHP 8.1–8.5
 **Switch every CommerceKings notification to opt-in with one install.**
 
 - **One switch.** Install it and every notification needs a consent first – no code, no settings.
-- **One-click unsubscribe.** Every email gets a signed, scanner-safe unsubscribe link, plus RFC 8058 headers that
-  mail clients such as Gmail can show as a button.
+- **Unsubscribe in one click.** Every email gets a signed, scanner-safe unsubscribe link, plus optional RFC 8058
+  headers that mail clients such as Gmail can show as a button.
 - **Withdrawal removes the subscription.** A shopper says no, and nothing more is sent.
 - **Only the right browser.** A restored cart goes back only to the browser that consented.
 
