@@ -13,13 +13,15 @@ Works with Magento 2.4+ · Luma and Hyvä · PHP 8.1–8.5
 The bridge between `commercekings/module-consent` and `commercekings/module-notification`. Leave it out and
 notifications run opt-out, with no consent tables.
 
+## Installation
+
 ```sh
 composer require commercekings/privacy-bundle:^0.1
 bin/magento setup:upgrade
 ```
 
-It needs a consent banner – Composer refuses to install it without one. `commercekings/privacy-bundle` brings ours;
-with your own banner (any package that provides `commercekings/consent-source`):
+The privacy bundle brings this bridge with our cookie banner. The bridge needs a consent banner – Composer refuses to
+install it without one. With your own banner (any package that provides `commercekings/consent-source`):
 `composer require commercekings/module-consent-notification:^0.1 vendor/your-banner`.
 
 ## What it does
