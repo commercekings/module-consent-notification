@@ -5,9 +5,12 @@ notifications (e.g. abandoned cart reminders) must need a consent; leave it out 
 consent tables exist.
 
 ```sh
-composer require commercekings/module-consent-notification:^0.1
+composer require commercekings/consent-optin:^0.1
 bin/magento setup:upgrade
 ```
+
+`commercekings/consent-optin` installs this bridge with the cookie banner. With your own banner:
+`composer require commercekings/module-consent-notification:^0.1 vendor/your-banner`.
 
 ## What it does
 
@@ -24,8 +27,7 @@ bin/magento setup:upgrade
 No tables, no settings. Without it, Notification and its features run opt-out.
 
 It needs a consent banner (`commercekings/module-consent-vanilla`, or any package that provides
-`commercekings/consent-source`) – Composer refuses to install it without one. `commercekings/consent-optin`
-installs both.
+`commercekings/consent-source`) – Composer refuses to install it without one.
 
 ## More
 
