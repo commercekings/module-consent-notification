@@ -1,41 +1,27 @@
 # CommerceKings_ConsentNotification
 
-Connects `commercekings/module-consent` to `commercekings/module-notification`. Install it for
-**consent-based notifications** (setup 1: a consent banner, a recorded consent per subscription). Leave it out for
-**opt-out notifications** (setup 2): Notification then allows every subscription until it is removed, and no
+The bridge between `commercekings/module-consent` and `commercekings/module-notification`. Install it when
+notifications (e.g. abandoned cart reminders) must need a consent; leave it out for opt-out notifications – then no
 consent tables exist.
 
-```bash
-composer require commercekings/module-consent-notification
-bin/magento module:enable CommerceKings_ConsentNotification
+```sh
+composer require commercekings/module-consent-notification:^0.1
 bin/magento setup:upgrade
 ```
 
 ## What it does
 
-- **Subscribing needs a consent.** Replaces Notification's `SubscriptionPermissionInterface` with
-  `Model\ConsentPermission`: a subscription needs a valid consent (`ConsentInterface::getCurrent()`) for its type's
-  purpose on the target's website. The consent id is the subscription's `permission_ref`, and Consent's SQL guard is part of
-  the subscribe INSERT and of every send-time check, so a withdrawal at the same moment wins.
-  - no consent → a guest's subscription to a single type is removed (as with an empty email);
-  - a consent of another website or purpose → refused, nothing changes.
-- **Withdrawal removes subscriptions.** `Plugin\WithdrawalPoolPlugin` registers `Model\WithdrawalHandler` (name
-  `notification_subscriptions`) for the purpose of every Notification subscription type, so a feature module
-  registers only its subscription type. A handler registered for the same purpose and name in `di.xml` wins.
-- **Who subscribed.** Replaces Notification's `SubscriberInterface` with `Model\ConsentSubscriber`: the subscriber is
-  the browser the consent was given in (Consent's public `ConsentOwnershipInterface`), so features may hand a
-  subscriber's data back to that browser only – e.g. abandoned cart's restore link.
+- **Subscribing needs a consent** for the notification's purpose, on the cart's website. The consent id is stored
+  on the subscription, and the consent check is part of the same database write, so a withdrawal at that moment wins.
+- **Withdrawing removes subscriptions** of every notification type – a feature registers only its type.
+- **Only the consenting browser is the subscriber**, so a feature (e.g. the cart restore link) hands data back only
+  there.
+- **Rechecks at send time** and gives the email Consent's signed unsubscribe link (confirmation page and
+  one-click).
+- **In the storefront**, features subscribe only when the visitor's banner choice allows it.
 
-- **Send time and unsubscribe.** `ConsentPermission::isValidFor()` rechecks a stored consent (valid, this purpose,
-  the store's website); `ConsentSubscriber::getUnsubscribeUrl()` is Consent's signed withdrawal link (confirmation
-  page and RFC 8058 one-click).
-- **Storefront.** Maps `CommerceKings_Notification/js/permission` to the visitor's consent choice
-  (`CommerceKings_Consent/js/consent/provider`), so features subscribe only with consent.
+No tables, no settings. It conflicts with `commercekings/module-abandoned-cart-optout`: a shop runs one setup.
 
-It adds no tables and no settings.
+## More
 
-## Tests
-
-`Test/Unit` covers the permission (granted, absent, refused, SQL condition, send-time recheck), the subscriber
-(browser ownership, unsubscribe link) and the withdrawal registration. Install the source checkout in a Magento development project and run them with PHPUnit;
-the CommerceKings sandbox runs them with every package.
+[Compatibility](COMPATIBILITY.md) · [Changes](CHANGELOG.md)
