@@ -83,6 +83,12 @@ class ConsentPermissionTest extends TestCase
         $this->assertSame('VALID(s.permission_ref)', $this->permission()->validCondition('s.permission_ref'));
     }
 
+    /** Consent required: Automatic opt-out notices stay hidden. */
+    public function testItIsNotOptOut(): void
+    {
+        $this->assertFalse($this->permission()->isOptOut());
+    }
+
     /** Send-time recheck: valid, and for this purpose and the store's website (moved from abandoned cart). */
     #[\PHPUnit\Framework\Attributes\DataProvider('sendTimeCases')]
     public function testSendTimeRecheckNeedsAValidConsentOfThisPurposeAndWebsite(bool $valid, ?Consent $stored, bool $expected): void

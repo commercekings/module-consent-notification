@@ -53,4 +53,10 @@ class ConsentPermission implements SubscriptionPermissionInterface
         return $consent !== null && $consent->purpose === $purpose
             && $consent->websiteId === (int)$this->stores->getStore($storeId)->getWebsiteId();
     }
+
+    /** A recorded consent is required: features hide their opt-out notice by default. */
+    public function isOptOut(): bool
+    {
+        return false;
+    }
 }

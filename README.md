@@ -18,9 +18,10 @@ bin/magento setup:upgrade
   there.
 - **Rechecks at send time** and gives the email Consent's signed unsubscribe link (confirmation page and
   one-click).
-- **In the storefront**, features subscribe only when the visitor's banner choice allows it.
+- **In the storefront**, features subscribe only when the visitor's banner choice allows it, and their opt-out
+  notices are off by default (the banner informs instead).
 
-No tables, no settings. It conflicts with `commercekings/module-abandoned-cart-optout`: a shop runs one setup.
+No tables, no settings. Without it, Notification and its features run opt-out.
 
 ## More
 
