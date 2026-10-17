@@ -2,7 +2,7 @@
 
 Works with Magento 2.4.4+ · Luma and Hyvä · PHP 8.1–8.5
 
-[![License](https://badgen.net/github/license/commercekings/module-consent-notification)](LICENSE) [![Release](https://badgen.net/github/release/commercekings/module-consent-notification)](https://github.com/commercekings/module-consent-notification/releases) [![Checks](https://badgen.net/github/checks/commercekings/module-consent-notification/main?label=checks)](https://github.com/commercekings/module-consent-notification/actions)
+[![License](https://badgen.net/github/license/commercekings/module-consent-notification)](LICENSE) [![Release](https://badgen.net/github/release/commercekings/module-consent-notification)](https://github.com/commercekings/module-consent-notification/releases) [![Checks](https://github.com/commercekings/module-consent-notification/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/commercekings/module-consent-notification/actions/workflows/checks.yml)
 
 **Switch every CommerceKings notification to opt-in with one install.**
 
