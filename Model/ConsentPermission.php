@@ -24,7 +24,8 @@ class ConsentPermission implements SubscriptionPermissionInterface
     ) {
     }
 
-    public function check(SubscriptionTypeInterface $type, Target $target): Permission
+    /** The banner consent is per browser, not per address: $recipient is not used. */
+    public function check(SubscriptionTypeInterface $type, Target $target, ?string $recipient = null): Permission
     {
         $consent = $this->consent->getCurrent($type->getPurpose());
         if ($consent === null) {
