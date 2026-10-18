@@ -10,7 +10,8 @@ use CommerceKings\Notification\Api\SubscriptionRemovalInterface;
 /**
  * Removes the subscriptions of withdrawn consents, for every type. Registered for the purpose of every subscription
  * type (Plugin\WithdrawalPoolPlugin). Repeating it is harmless. Without it nothing is sent anyway - the consumer
- * gate and claims check the consent - only cleanup waits.
+ * gate and claims check the consent - only cleanup waits. It removes by the withdrawn consent ids only, so a type
+ * with its own permission loses a subscription only when that subscription's reference is the withdrawn consent.
  */
 class WithdrawalHandler implements WithdrawalHandlerInterface
 {

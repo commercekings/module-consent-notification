@@ -26,7 +26,13 @@ class StaleSubscriptionCleanupTest extends TestCase
         require_once $root . '/app/bootstrap.php';
         $om = Bootstrap::create(BP, $_SERVER)->getObjectManager();
         $this->resource = $om->get(ResourceConnection::class);
-        $this->cleanup = $om->get(StaleSubscriptionCleanup::class);
+        // a type with its own permission (e.g. an SMS checkbox): its references are no consent ids
+        $own = $this->createStub(\CommerceKings\Notification\Api\SubscriptionTypeInterface::class);
+        $own->method('getPermission')->willReturn($this->createStub(\CommerceKings\Notification\Api\SubscriptionPermissionInterface::class));
+        $types = new \CommerceKings\Notification\Model\SubscriptionTypePool(['ck_stale_own' => $own,
+            'ck_stale_test' => $this->createStub(\CommerceKings\Notification\Api\SubscriptionTypeInterface::class)]);
+        $this->cleanup = $om->create(StaleSubscriptionCleanup::class, ['permissions' => $om->create(
+            \CommerceKings\Notification\Model\PermissionResolver::class, ['types' => $types])]);
         $this->run = bin2hex(random_bytes(4));
     }
 
@@ -49,11 +55,11 @@ class StaleSubscriptionCleanupTest extends TestCase
         return $id;
     }
 
-    private function subscription(string $reference): int
+    private function subscription(string $reference, string $type = 'ck_stale_test'): int
     {
         $this->references[] = $id = random_int(1000000000, 2000000000);
         $this->resource->getConnection()->insert($this->resource->getTableName(SubscriptionManagement::TABLE), [
-            'type' => 'ck_stale_test', 'reference_id' => $id, 'store_id' => 1, 'subject_key' => '',
+            'type' => $type, 'reference_id' => $id, 'store_id' => 1, 'subject_key' => '',
             'customer_id' => null, 'contact_id' => null, 'permission_ref' => $reference,
         ]);
         return $id;
@@ -66,6 +72,8 @@ class StaleSubscriptionCleanupTest extends TestCase
         $withdrawn = $this->subscription($this->consent('withdrawn', 'NOW() + INTERVAL 30 DAY', 'NOW()'));
         $deleted = $this->subscription('ckst' . $this->run . 'gone');           // removed by record retention
         $optOut = $this->subscription('');                                      // no permission reference
+        $ownValid = $this->subscription('sms-checkbox-' . $this->run, 'ck_stale_own');  // own permission: no consent row
+        $ownWithdrawn = $this->subscription($this->consent('ownwithdrawn', 'NOW() + INTERVAL 30 DAY', 'NOW()'), 'ck_stale_own');
 
         $this->assertGreaterThanOrEqual(3, $this->cleanup->execute());
 
@@ -74,9 +82,10 @@ class StaleSubscriptionCleanupTest extends TestCase
             ->from($this->resource->getTableName(SubscriptionManagement::TABLE), 'reference_id')
             ->where('reference_id IN (?)', $this->references)));
         sort($left);
-        $expected = [$valid, $optOut];
+        $expected = [$valid, $optOut, $ownValid];
         sort($expected);
-        $this->assertSame($expected, $left, 'valid and opt-out subscriptions stay');
+        $this->assertSame($expected, $left, 'valid, opt-out and own-permission subscriptions stay');
+        $this->assertNotContains($ownWithdrawn, $left, 'a withdrawn consent row is stale for every type');
         $this->assertNotContains($expired, $left);
         $this->assertNotContains($withdrawn, $left);
         $this->assertNotContains($deleted, $left);

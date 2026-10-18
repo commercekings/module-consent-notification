@@ -14,6 +14,8 @@ class StaleSubscriptionCleanupTest extends TestCase
 {
     private array $wheres = [];
     private array $removed = [];
+    /** types with their own permission */
+    private array $own = [];
 
     private function cleanup(array $batches, ?int $removes = null): StaleSubscriptionCleanup
     {
@@ -27,6 +29,7 @@ class StaleSubscriptionCleanupTest extends TestCase
         });
         $db = $this->createStub(AdapterInterface::class);
         $db->method('select')->willReturn($select);
+        $db->method('quoteInto')->willReturnCallback(fn ($text, $value) => str_replace('?', "'" . implode("', '", (array)$value) . "'", $text));
         $db->method('fetchCol')->willReturnCallback(function () use (&$batches) { return array_shift($batches) ?? []; });
         $resource = $this->createStub(ResourceConnection::class);
         $resource->method('getConnection')->willReturn($db);
@@ -36,7 +39,9 @@ class StaleSubscriptionCleanupTest extends TestCase
             $this->removed[] = $references;
             return $removes ?? count($references);
         });
-        return new StaleSubscriptionCleanup($resource, $removal);
+        $permissions = $this->createStub(\CommerceKings\Notification\Model\PermissionResolver::class);
+        $permissions->method('ownPermissionTypes')->willReturnCallback(fn () => $this->own);
+        return new StaleSubscriptionCleanup($resource, $removal, $permissions);
     }
 
     public function testRemovesSubscriptionsOfWithdrawnExpiredOrDeletedConsentsInBatches(): void
@@ -44,8 +49,17 @@ class StaleSubscriptionCleanupTest extends TestCase
         $this->assertSame(3, $this->cleanup([['c1', 'c2'], ['c3']])->execute());
         $this->assertSame([['c1', 'c2'], ['c3']], $this->removed);
         $this->assertSame(["s.permission_ref <> ''",
-            'c.consent_id IS NULL OR c.withdrawn_at IS NOT NULL OR c.expires_at <= NOW()'], $this->wheres,
+            '(c.consent_id IS NULL) OR c.withdrawn_at IS NOT NULL OR c.expires_at <= NOW()'], $this->wheres,
             'only stored consent rows decide; subscriptions without a reference (opt-out) are never touched');
+    }
+
+    /** A type with its own permission stores references that are no consent ids: "no consent row" is not stale there. */
+    public function testAMissingConsentRowIsStaleOnlyForShopWideTypes(): void
+    {
+        $this->own = ['sms_offer'];
+        $this->cleanup([])->execute();
+        $this->assertSame("(c.consent_id IS NULL AND s.type NOT IN ('sms_offer')) OR c.withdrawn_at IS NOT NULL"
+            . ' OR c.expires_at <= NOW()', $this->wheres[1]);
     }
 
     public function testABatchThatRemovesNothingEndsTheLoop(): void

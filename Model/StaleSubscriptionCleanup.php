@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace CommerceKings\ConsentNotification\Model;
 
 use CommerceKings\Notification\Api\SubscriptionRemovalInterface;
+use CommerceKings\Notification\Model\PermissionResolver;
 use CommerceKings\Notification\Model\SubscriptionManagement;
 use Magento\Framework\App\ResourceConnection;
 
@@ -12,7 +13,9 @@ use Magento\Framework\App\ResourceConnection;
  * record retention. Withdrawal removes them at once (WithdrawalHandler); expiry has no such moment, so without this
  * the subscription and a guest's contact would wait for the cart to be deleted. Only stored consent rows decide –
  * never the current configuration – so a misconfigured source cannot remove valid subscriptions. A newer consent
- * has a new id: a subscription renewed with it is not touched.
+ * has a new id: a subscription renewed with it is not touched. A type with its own permission
+ * (SubscriptionTypeInterface::getPermission()) stores references that are no consent ids: "no consent row" is stale
+ * only for types on the shop-wide (consent) permission; a withdrawn or expired consent row is stale for every type.
  */
 class StaleSubscriptionCleanup
 {
@@ -20,7 +23,8 @@ class StaleSubscriptionCleanup
 
     public function __construct(
         private readonly ResourceConnection $resource,
-        private readonly SubscriptionRemovalInterface $removal
+        private readonly SubscriptionRemovalInterface $removal,
+        private readonly PermissionResolver $permissions
     ) {
     }
 
@@ -28,11 +32,14 @@ class StaleSubscriptionCleanup
     public function execute(): int
     {
         $db = $this->resource->getConnection();
+        $own = $this->permissions->ownPermissionTypes();
+        $missing = $own === [] ? 'c.consent_id IS NULL'
+            : $db->quoteInto('c.consent_id IS NULL AND s.type NOT IN (?)', $own);
         $stale = $db->select()->distinct()
             ->from(['s' => $this->resource->getTableName(SubscriptionManagement::TABLE)], 'permission_ref')
             ->joinLeft(['c' => $this->resource->getTableName('ck_consent')], 'c.consent_id = s.permission_ref', [])
             ->where("s.permission_ref <> ''")
-            ->where('c.consent_id IS NULL OR c.withdrawn_at IS NOT NULL OR c.expires_at <= NOW()')
+            ->where('(' . $missing . ') OR c.withdrawn_at IS NOT NULL OR c.expires_at <= NOW()')
             ->limit(self::BATCH);
         $removed = 0;
         while ($references = $db->fetchCol($stale)) {
