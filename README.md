@@ -32,6 +32,9 @@ install it without one. With your own banner (any package that provides `commerc
   moment wins; it is checked again at send time.
 - **In the storefront**, features subscribe only when the banner allows it; their opt-out notices are off by default
   (the banner informs instead).
+- **Cleans up.** Withdrawing a consent removes its subscriptions at once; a daily cron
+  (`commercekings_consent_notification_stale_cleanup`, 03:05) removes those of expired or deleted consents, so a
+  guest's address does not wait for the cart to be deleted.
 
 It adds no tables.
 

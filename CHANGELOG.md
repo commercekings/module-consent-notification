@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Daily cleanup (`commercekings_consent_notification_stale_cleanup`, 03:05) of subscriptions whose consent was
+  withdrawn, expired or deleted by record retention; only stored consent rows decide, never the current configuration.
 - Requires Magento 2.4.4 or later (`magento/framework ^103.0.4`): Magento 2.4.0–2.4.3 do not run on PHP 8.1.
 - Requires a consent banner (`commercekings/consent-source`, provided by `module-consent-vanilla`); sets
   `commercekings_consent_notification/general/enabled`, which features use to show their consent switch only in opt-in.

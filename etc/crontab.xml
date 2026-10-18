@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <!-- before Notification's subscription (03:10) and contact (03:15) cleanups, which then drop unused addresses -->
+        <job name="commercekings_consent_notification_stale_cleanup" instance="CommerceKings\ConsentNotification\Cron\RemoveStaleSubscriptions" method="execute">
+            <schedule>5 3 * * *</schedule>
+        </job>
+    </group>
+</config>
