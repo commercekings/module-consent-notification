@@ -13,8 +13,8 @@ Works with Magento 2.4.4+ · Luma and Hyvä · PHP 8.1–8.5
 - **Withdrawal removes the subscription.** A shopper says no, and nothing more is sent.
 - **Only the right browser.** A restored cart goes back only to the browser that consented.
 
-The bridge between `commercekings/module-consent` and `commercekings/module-notification`. Leave it out and
-notifications run opt-out, with no consent tables.
+The bridge between `commercekings/module-consent` and `commercekings/module-notification`. Leave it out and email
+notifications run opt-out, with no consent tables; types with their own consent (a phone checkbox) are unaffected.
 
 ## Installation
 
