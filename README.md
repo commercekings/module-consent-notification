@@ -6,7 +6,8 @@ Works with Magento 2.4.4+ · Luma and Hyvä · PHP 8.1–8.5
 
 **Switch every CommerceKings notification to opt-in with one install.**
 
-- **One switch.** Install it and every notification needs a consent first – no code, no settings.
+- **One switch.** Install it and every notification needs a consent first – no code, no settings. A notification
+  type with its own consent (e.g. a checkbox for a phone number) keeps it: the banner decides only for the others.
 - **Unsubscribe in one click.** Every email gets a signed, scanner-safe unsubscribe link, plus optional RFC 8058
   headers that mail clients such as Gmail can show as a button.
 - **Withdrawal removes the subscription.** A shopper says no, and nothing more is sent.
@@ -34,7 +35,7 @@ install it without one. With your own banner (any package that provides `commerc
   (the banner informs instead).
 - **Cleans up.** Withdrawing a consent removes its subscriptions at once; a daily cron
   (`commercekings_consent_notification_stale_cleanup`, 03:05) removes those of expired or deleted consents, so a
-  guest's address does not wait for the cart to be deleted.
+  guest's address does not wait for the cart to be deleted. Types with their own permission are left to it.
 
 It adds no tables.
 
