@@ -39,6 +39,12 @@ install it without one. With your own banner (any package that provides `commerc
 
 It adds no tables.
 
+## Tested (as of 0.1.0)
+
+- **Automated tests:** 18 unit, 1 integration and 4 JavaScript tests (unit and JavaScript tests run on every push); 96.2% line coverage by the unit tests.
+- **End to end on Magento 2.4.9:** in the abandoned cart run, withdrawing consent in the banner clears the cart's subscription, and a new choice captures it again.
+- **Install:** a fresh install of every CommerceKings package from GitHub on an empty Magento database, verified.
+
 ## More
 
 [Compatibility](COMPATIBILITY.md) · [Changes](CHANGELOG.md)
@@ -49,12 +55,6 @@ These modules help you ask for, record and respect your shoppers' choices – th
 their own. You are responsible for your store's privacy: what you collect, the wording you show, your privacy policy
 and whether your setup meets the laws that apply to you (e.g. GDPR, ePrivacy, email marketing rules). Get legal advice
 if you are unsure.
-
-## Tested (as of 0.1.0)
-
-- **Automated tests:** 18 unit, 1 integration and 4 JavaScript tests (unit and JavaScript tests run on every push); 96.2% line coverage by the unit tests.
-- **End to end on Magento 2.4.9:** in the abandoned cart run, withdrawing consent in the banner clears the cart's subscription, and a new choice captures it again.
-- **Install:** a fresh install of every CommerceKings package from GitHub on an empty Magento database, verified.
 
 ---
 
