@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 - 2026-10-19
 
 - Daily cleanup (`commercekings_consent_notification_stale_cleanup`, 03:05) of subscriptions whose consent was
   withdrawn, expired or deleted by record retention; only stored consent rows decide, never the current configuration.
